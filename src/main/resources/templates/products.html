@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{layout :: head}"></head>
+<body>
+
+<nav th:replace="~{layout :: nav}"></nav>
+
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2 class="text-success">
+                <i class="fas fa-shopping-basket me-2"></i>
+                <span th:if="${selectedCategory != null}" th:text="${selectedCategory}"></span>
+                <span th:unless="${selectedCategory != null}">All Products</span>
+            </h2>
+        </div>
+    </div>
+    
+    <!-- Filters and Search -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="input-group">
+                <span class="input-group-text bg-success text-white">
+                    <i class="fas fa-filter"></i>
+                </span>
+                <select id="categoryFilter" class="form-select">
+                    <option value="">All Categories</option>
+                    <option th:each="category : ${categories}" 
+                            th:value="${category}" 
+                            th:text="${category}"
+                            th:selected="${selectedCategory == category}">
+                        Category
+                    </option>
+                </select>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="input-group">
+                <span class="input-group-text bg-success text-white">
+                    <i class="fas fa-search"></i>
+                </span>
+                <input type="text" id="productSearch" class="form-control" placeholder="Search products...">
+            </div>
+        </div>
+    </div>
+    
+    <!-- Products Grid -->
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4 mb-4">
+        <div class="col product-card-container" th:each="product : ${products}">
+            <div class="card h-100 product-card shadow-sm">
+               <!-- <div class="product-img-container">
+                    <img th:src="@{'/images/products/' + ${product.id} + '.jpg'}" 
+                         class="product-img"
+                         th:alt="${product.name}" 
+                         onerror="this.src='/images/product-placeholder.jpg'">
+                    <span class="product-category badge" 
+                          th:text="${product.category}"></span>
+                </div> -->
+                <div class="card-body">
+                    <h5 class="product-title" th:text="${product.name}">Product Name</h5>
+                    <p class="product-description text-muted mb-2" th:text="${product.productDescription}">
+                        Product description goes here.
+                    </p>
+                    <div class="d-flex justify-content-between align-items-center mt-3">
+                        <span class="product-price" th:text="${'$' + product.price}">$0.00</span>
+                        <span class="product-stock" th:text="${product.stock + ' in stock'}" 
+                              th:class="${product.stock > 0 ? 'product-stock' : 'product-stock out-of-stock'}">
+                            0 in stock
+                        </span>
+                    </div>
+                </div>
+                <div class="card-footer bg-white border-top-0">
+                    <form th:action="@{/cart/add}" method="post" th:id="'add-to-cart-form-' + ${product.id}">
+                        <input type="hidden" name="productId" th:value="${product.id}">
+                        <div class="d-flex">
+                            <div class="input-group me-2">
+                                <button type="button" class="btn btn-outline-secondary quantity-decrement">-</button>
+                                <input type="number" name="quantity" value="1" min="1" th:max="${product.stock}" 
+                                       class="form-control text-center" required>
+                                <button type="button" class="btn btn-outline-secondary quantity-increment">+</button>
+                            </div>
+                            <button type="submit" class="btn btn-success flex-grow-1" 
+                                    th:disabled="${product.stock <= 0}"
+                                    th:attr="data-product-id=${product.id}, data-product-name=${product.name}"
+                                    onclick="return addToCart(this.closest('form').id, this.getAttribute('data-product-name'));">
+                                <i class="fas fa-cart-plus"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Empty State -->
+    <div class="row mb-4" th:if="${products.empty}">
+        <div class="col-12 text-center py-5">
+            <i class="fas fa-search fa-3x text-muted mb-3"></i>
+            <h4 class="text-muted">No products found</h4>
+            <p>Try changing your search criteria or check back later for new products.</p>
+            <a th:href="@{/products}" class="btn btn-outline-success mt-3">View All Products</a>
+        </div>
+    </div>
+</div>
+
+<footer th:replace="~{layout :: footer}"></footer>
+
+<!-- Bootstrap JS and Custom Scripts -->
+<div th:replace="~{layout :: scripts}"></div>
+
+</body>
+</html>

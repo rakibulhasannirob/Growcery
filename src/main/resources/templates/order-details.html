@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{layout :: head}"></head>
+<body>
+
+<nav th:replace="~{layout :: nav}"></nav>
+
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a th:href="@{/orders}" class="text-decoration-none">My Orders</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">
+                        Order #<span th:text="${order.id}">123</span>
+                    </li>
+                </ol>
+            </nav>
+            
+            <h2 class="text-success">
+                <i class="fas fa-receipt me-2"></i>Order Details
+            </h2>
+        </div>
+    </div>
+    
+    <!-- Order Information -->
+    <div class="row mb-4">
+        <div class="col-md-6 mb-4 mb-md-0">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">Order Information</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-4 fw-bold">Order Number:</div>
+                        <div class="col-8" th:text="${order.id}">123</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-4 fw-bold">Date:</div>
+                        <div class="col-8" th:text="${#temporals.format(order.orderDate, 'MMMM dd, yyyy HH:mm')}">
+                            January 1, 2023 12:00
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-4 fw-bold">Status:</div>
+                        <div class="col-8">
+                            <span class="badge bg-success" th:text="${order.status}">Status</span>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-4 fw-bold">Total:</div>
+                        <div class="col-8 text-success fw-bold" th:text="${'$' + order.totalAmount}">$0.00</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">Shipping Information</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3" sec:authorize="hasRole('ADMIN')" th:if="${customer != null}">
+                        <div class="col-4 fw-bold">Customer:</div>
+                        <div class="col-8" th:text="${customer.username}">Username</div>
+                    </div>
+                    <div class="row mb-3" th:if="${customer != null}">
+                        <div class="col-4 fw-bold">Address:</div>
+                        <div class="col-8" th:text="${customer.address}">
+                            123 Main St, Anytown, AN 12345
+                        </div>
+                    </div>
+                    <div class="row mb-3" th:if="${customer != null}">
+                        <div class="col-4 fw-bold">Phone:</div>
+                        <div class="col-8" th:text="${customer.mobileNumber}">
+                            (123) 456-7890
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-4 fw-bold">Delivery Method:</div>
+                        <div class="col-8">Standard Shipping</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-4 fw-bold">Estimated Delivery:</div>
+                        <div class="col-8" th:text="${#temporals.format(order.orderDate.plusDays(3), 'MMMM dd, yyyy')}">
+                            January 4, 2023
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Order Items -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">Order Items</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <!-- <th style="width: 100px;">Image</th> -->
+                                    <th>Product</th>
+                                    <th>Category</th>
+                                    <th class="text-end">Price</th>
+                                    <th class="text-center">Quantity</th>
+                                    <th class="text-end">Subtotal</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="item : ${orderItems}">
+                                    <!--   <td>
+                                        <img th:src="@{'/images/products/' + ${item.product.id} + '.jpg'}" 
+                                            class="img-fluid rounded" style="max-height: 50px;" 
+                                            th:alt="${item.product.name}"
+                                            onerror="this.src='/images/product-placeholder.jpg'">
+                                    </td> -->
+                                    <td th:text="${item.product.name}">Product Name</td>
+                                    <td>
+                                        <span class="badge bg-success" th:text="${item.product.category}">Category</span>
+                                    </td>
+                                    <td class="text-end" th:text="${'$' + item.price}">$0.00</td>
+                                    <td class="text-center" th:text="${item.quantity}">1</td>
+                                    <td class="text-end fw-bold" th:text="${'$' + item.price.multiply(new java.math.BigDecimal(item.quantity))}">$0.00</td>
+                                </tr>
+                            </tbody>
+                            <tfoot class="table-light">
+                                <tr>
+                                    <td colspan="5" class="text-end fw-bold">Total:</td>
+                                    <td class="text-end fw-bold text-success" th:text="${'$' + order.totalAmount}">$0.00</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Actions -->
+    <div class="row mb-4">
+        <div class="col-12 text-center">
+            <a th:href="@{/orders}" class="btn btn-outline-secondary me-2">
+                <i class="fas fa-arrow-left me-2"></i>Back to Orders
+            </a>
+            <a th:href="@{/products}" class="btn btn-success">
+                <i class="fas fa-shopping-basket me-2"></i>Continue Shopping
+            </a>
+        </div>
+    </div>
+</div>
+
+<footer th:replace="~{layout :: footer}"></footer>
+
+<!-- Bootstrap JS and Custom Scripts -->
+<div th:replace="~{layout :: scripts}"></div>
+
+</body>
+</html>

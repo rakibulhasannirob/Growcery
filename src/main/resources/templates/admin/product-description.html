@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{layout :: head}">
+    <title>Product Description Generator</title>
+</head>
+<body>
+
+<nav th:replace="~{layout :: nav}"></nav>
+
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a th:href="@{/admin/dashboard}" class="text-decoration-none">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a th:href="@{/admin/products}" class="text-decoration-none">Products</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Description Generator</li>
+                </ol>
+            </nav>
+            
+            <h2 class="text-success">
+                <i class="fas fa-magic me-2"></i>AI Product Description Generator
+            </h2>
+            <p class="text-muted">Create rich, SEO-optimized product descriptions with AI assistance</p>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">Generate New Product Description</h5>
+                </div>
+                <div class="card-body">
+                    <form id="descriptionForm">
+                        <div class="mb-3">
+                            <label for="productName" class="form-label">Product Name</label>
+                            <input type="text" class="form-control" id="productName" name="productName" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="category" class="form-label">Category</label>
+                            <select class="form-select" id="category" name="category" required>
+                                <option value="">-- Select Category --</option>
+                                <option value="FRUIT">Fruit</option>
+                                <option value="VEGETABLE">Vegetable</option>
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="basicDescription" class="form-label">Basic Description (Optional)</label>
+                            <textarea class="form-control" id="basicDescription" name="basicDescription" rows="3" 
+                                      placeholder="Enter any basic details you know about this product..."></textarea>
+                            <div class="form-text">This will be used as a starting point for the AI to generate a more detailed description.</div>
+                        </div>
+                        
+                        <div class="text-end">
+                            <button type="submit" class="btn btn-success" id="generateBtn">
+                                <i class="fas fa-magic me-2"></i>Generate Description
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="card shadow-sm mb-4" id="resultCard" style="display: none;">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Generated Description</h5>
+                </div>
+                <div class="card-body">
+                    <form id="saveForm" method="post" action="">
+                        <div class="mb-3">
+                            <label for="generatedDescription" class="form-label">Product Description</label>
+                            <textarea class="form-control" id="generatedDescription" name="description" rows="8"></textarea>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="generatedKeywords" class="form-label">SEO Keywords</label>
+                            <input type="text" class="form-control" id="generatedKeywords" name="keywords">
+                        </div>
+                        
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <strong>Note:</strong> You can edit the description and keywords before saving.
+                        </div>
+                        
+                        <div class="text-end">
+                            <button type="button" class="btn btn-outline-secondary me-2" id="regenerateBtn">
+                                <i class="fas fa-sync-alt me-2"></i>Regenerate
+                            </button>
+                            <button type="submit" class="btn btn-success" id="saveBtn">
+                                <i class="fas fa-save me-2"></i>Save Description
+                            </button>
+                            <a href="#" id="createProductBtn" class="btn btn-primary ms-2">
+                                <i class="fas fa-plus-circle me-2"></i>Create New Product
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-secondary text-white">
+                    <h5 class="mb-0">Existing Products</h5>
+                </div>
+                <div class="card-body">
+                    <div class="list-group">
+                        <a th:each="product : ${products}" 
+                           th:href="@{'/admin/product-description/' + ${product.id}}" 
+                           class="list-group-item list-group-item-action">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1" th:text="${product.name}">Product Name</h6>
+                                <small th:text="${product.category}">Category</small>
+                            </div>
+                            <small>Click to enhance description</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card shadow-sm">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">Benefits</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="fa-ul mb-0">
+                        <li><span class="fa-li"><i class="fas fa-check-circle text-success"></i></span>
+                            <strong>Rich Descriptions</strong> - Detailed, engaging content
+                        </li>
+                        <li><span class="fa-li"><i class="fas fa-check-circle text-success"></i></span>
+                            <strong>SEO Optimized</strong> - Improve search rankings
+                        </li>
+                        <li><span class="fa-li"><i class="fas fa-check-circle text-success"></i></span>
+                            <strong>Highlight Benefits</strong> - Focus on nutritional value
+                        </li>
+                        <li><span class="fa-li"><i class="fas fa-check-circle text-success"></i></span>
+                            <strong>Save Time</strong> - Generate in seconds, not hours
+                        </li>
+                        <li><span class="fa-li"><i class="fas fa-check-circle text-success"></i></span>
+                            <strong>Editable Results</strong> - Customize as needed
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer th:replace="~{layout :: footer}"></footer>
+
+<!-- Bootstrap JS and Custom Scripts -->
+<div th:replace="~{layout :: scripts}"></div>
+
+<!-- Custom JavaScript for this page -->
+<script th:inline="javascript">
+document.addEventListener('DOMContentLoaded', function() {
+    const descriptionForm = document.getElementById('descriptionForm');
+    const resultCard = document.getElementById('resultCard');
+    const saveForm = document.getElementById('saveForm');
+    const generateBtn = document.getElementById('generateBtn');
+    const regenerateBtn = document.getElementById('regenerateBtn');
+    const saveBtn = document.getElementById('saveBtn');
+    const createProductBtn = document.getElementById('createProductBtn');
+    
+    let currentProductId = null;
+    
+    // Generate description
+    descriptionForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const productName = document.getElementById('productName').value;
+        const category = document.getElementById('category').value;
+        const basicDescription = document.getElementById('basicDescription').value;
+        
+        generateBtn.disabled = true;
+        generateBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Generating...';
+        
+        fetch('/admin/product-description/generate', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: new URLSearchParams({
+                'productName': productName,
+                'category': category,
+                'basicDescription': basicDescription
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('generatedDescription').value = data.description;
+            document.getElementById('generatedKeywords').value = data.keywords;
+            
+            resultCard.style.display = 'block';
+            
+            // Scroll to the result card
+            resultCard.scrollIntoView({ behavior: 'smooth' });
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while generating the description. Please try again.');
+        })
+        .finally(() => {
+            generateBtn.disabled = false;
+            generateBtn.innerHTML = '<i class="fas fa-magic me-2"></i>Generate Description';
+        });
+    });
+    
+    // Regenerate button
+    if (regenerateBtn) {
+        regenerateBtn.addEventListener('click', function() {
+            descriptionForm.dispatchEvent(new Event('submit'));
+        });
+    }
+    
+                // Create Product button
+    if (createProductBtn) {
+        createProductBtn.addEventListener('click', function() {
+            const productName = document.getElementById('productName').value;
+            const category = document.getElementById('category').value;
+            const description = document.getElementById('generatedDescription').value;
+            const keywords = document.getElementById('generatedKeywords').value;
+            
+            if (!productName || !category || !description) {
+                alert('Please fill in the product name, category, and generate a description before creating a product.');
+                return;
+            }
+            
+            // Create a form to submit the new product with the generated description
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '/admin/product-description/create-product';
+            form.style.display = 'none';
+            
+            // Add the necessary fields
+            const fields = [
+                { name: 'name', value: productName },
+                { name: 'category', value: category },
+                { name: 'description', value: description },
+                { name: 'keywords', value: keywords },
+                { name: 'price', value: '0.00' }, // Default price, will be edited later
+                { name: 'stock', value: '0' }     // Default stock, will be edited later
+            ];
+            
+            fields.forEach(field => {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = field.name;
+                input.value = field.value;
+                form.appendChild(input);
+            });
+            
+            // Add form to body and submit
+            document.body.appendChild(form);
+            form.submit();
+        });
+    }
+});
+</script>
+
+</body>
+</html>

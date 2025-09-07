@@ -1,0 +1,8 @@
+  <div class="product-img-container">
+                    <img th:src="@{'/images/products/' + ${product.id} + '.jpg'}" 
+                         class="product-img"
+                         th:alt="${product.name}" 
+                         onerror="this.src='/images/product-placeholder.jpg'">
+                    <span class="product-category badge" 
+                          th:text="${product.category}"></span>
+                </div>

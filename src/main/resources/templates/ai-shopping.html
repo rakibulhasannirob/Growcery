@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{layout :: head}"></head>
+<body>
+
+<nav th:replace="~{layout :: nav}"></nav>
+
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2 class="text-success">
+                <i class="fas fa-robot me-2"></i>AI-Powered Shopping Assistant
+            </h2>
+            <p class="text-muted">Get personalized fruits and vegetables recommendations based on your needs</p>
+        </div>
+    </div>
+    
+    <!-- AI Chat Interface -->
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="fas fa-brain me-2"></i>Health-based Recommendation System</h5>
+                </div>
+                <div class="card-body">
+                    <form th:action="@{/ai-shopping/recommend}" method="post">
+                        <div class="mb-3">
+                            <label for="situation" class="form-label">Describe your health situation or dietary needs:</label>
+                            <textarea class="form-control" id="situation" name="situation" rows="3" 
+                                      placeholder="Example: I have a cold with a sore throat, or I need fruits for a diabetic diet, or I want vegetables rich in iron..."
+                                      th:text="${aiSituation}" required></textarea>
+                        </div>
+                        <div class="text-end">
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-magic me-2"></i>Get AI Recommendations
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- AI Response -->
+            <div class="card shadow-sm mb-4" th:if="${recommendations != null}">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-lightbulb me-2"></i>Recommended Products</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-4">
+                        <h5>Based on your situation:</h5>
+                        <p class="font-italic text-muted" th:text="${recommendations.situation}">Situation description</p>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <h5>AI Recommendations:</h5>
+                        <ul class="list-group">
+                            <li class="list-group-item" th:each="product : ${recommendations.recommendedProducts}" 
+                                th:text="${product}">Product name</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="mb-4" th:if="${!#lists.isEmpty(recommendations.unavailableProducts)}">
+                        <h5 class="text-warning">Unavailable Products:</h5>
+                        <ul class="list-group">
+                            <li class="list-group-item list-group-item-warning" th:each="product : ${recommendations.unavailableProducts}" 
+                                th:text="${product}">Product name</li>
+                        </ul>
+                        <p class="mt-2 small">We've suggested alternatives based on similar health benefits.</p>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <h5>Available Products in Our Store:</h5>
+                        <form th:action="@{/ai-shopping/create-order}" method="post" id="ai-order-form">
+                            <input type="hidden" name="situation" th:value="${recommendations.situation}" />
+                            
+                            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+                                <div class="col" th:each="product : ${recommendations.availableProducts}">
+                                    <div class="card h-100">
+                                        <div class="card-header d-flex justify-content-between align-items-center">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" name="productIds" 
+                                                       th:value="${product.id}" th:id="'product-' + ${product.id}" checked>
+                                                <label class="form-check-label" th:for="'product-' + ${product.id}" 
+                                                       th:text="${product.name}">Product Name</label>
+                                            </div>
+                                            <span class="badge bg-success" th:text="${product.category}">Category</span>
+                                        </div>
+                                        <div class="card-body">
+                    <!--                    <img th:src="@{'/images/products/' + ${product.id} + '.jpg'}" 
+                                                 class="img-fluid rounded mb-2" 
+                                                 th:alt="${product.name}"
+                                                 onerror="this.src='/images/product-placeholder.jpg'" style="max-height: 100px; object-fit: contain;">   -->    
+                                            <p class="card-text small" th:text="${product.productDescription}">
+                                                Product description goes here.
+                                            </p>
+                                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                                <span class="fw-bold" th:text="${'$' + product.price}">$0.00</span>
+                                                <span class="text-muted" th:text="${product.stock + ' in stock'}">0 in stock</span>
+                                            </div>
+                                            
+                                            <!-- Quantity Controls -->
+                                            <div class="input-group input-group-sm mt-2">
+                                                <span class="input-group-text">Qty</span>
+                                                <button type="button" class="btn btn-outline-secondary quantity-decrement" 
+                                                        th:data-product-id="${product.id}">-</button>
+                                                <input type="number" class="form-control text-center product-quantity" 
+                                                       th:id="'quantity-' + ${product.id}"
+                                                       th:name="'quantity-' + ${product.id}" value="1" min="1" 
+                                                       th:max="${product.stock}" required>
+                                                <button type="button" class="btn btn-outline-secondary quantity-increment"
+                                                        th:data-product-id="${product.id}">+</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="text-center mt-4">
+                                <div class="mb-3">
+                                    <h5>Summary:</h5>
+                                    <p class="mb-1">Total Items: <span id="total-items">0</span></p>
+                                    <p>Estimated Total: <span id="total-price">$0.00</span></p>
+                                </div>
+                                <button type="submit" class="btn btn-success btn-lg">
+                                    <i class="fas fa-shopping-cart me-2"></i>Place Order with Selected Items
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- AI Memory Panel -->
+        <div class="col-md-4">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-secondary text-white">
+                    <h5 class="mb-0"><i class="fas fa-memory me-2"></i>AI Memory</h5>
+                </div>
+                <div class="card-body">
+                    <div th:if="${memory != null && !memory.empty}">
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item small" th:each="item : ${memory}" th:text="${item}">Memory item</li>
+                        </ul>
+                        <form th:action="@{/ai-shopping/clear-memory}" method="post" class="mt-3">
+                            <button type="submit" class="btn btn-outline-danger btn-sm">
+                                <i class="fas fa-trash me-2"></i>Clear AI Memory
+                            </button>
+                        </form>
+                    </div>
+                    <div th:if="${memory == null || memory.empty}">
+                        <p class="text-muted">The AI has no memory of previous interactions yet.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card shadow-sm">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>How It Works</h5>
+                </div>
+                <div class="card-body">
+                    <ol>
+                        <li class="mb-2">Describe your health situation or dietary requirements</li>
+                        <li class="mb-2">Our AI will analyze your needs and recommend the best fruits and vegetables</li>
+                        <li class="mb-2">The system checks availability in our inventory</li>
+                        <li class="mb-2">For unavailable items, alternatives with similar benefits are suggested</li>
+                        <li class="mb-2">Select the items you want and place your order</li>
+                    </ol>
+                    <div class="alert alert-primary mt-3">
+                        <i class="fas fa-star me-2"></i>
+                        <strong>Powered by AI</strong> - Our recommendations are based on the latest nutritional science and health guidelines.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer th:replace="~{layout :: footer}"></footer>
+
+<!-- Bootstrap JS and Custom Scripts -->
+<div th:replace="~{layout :: scripts}"></div>
+
+<!-- AI Shopping specific JavaScript -->
+<script th:if="${recommendations != null}">
+    document.addEventListener('DOMContentLoaded', function() {
+        // Setup quantity increment/decrement buttons
+        const decrementButtons = document.querySelectorAll('.quantity-decrement');
+        const incrementButtons = document.querySelectorAll('.quantity-increment');
+        
+        decrementButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const productId = this.getAttribute('data-product-id');
+                const input = document.getElementById('quantity-' + productId);
+                const value = parseInt(input.value);
+                if (value > 1) {
+                    input.value = value - 1;
+                    updateProductSelection(productId);
+                    updateOrderSummary();
+                }
+            });
+        });
+        
+        incrementButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const productId = this.getAttribute('data-product-id');
+                const input = document.getElementById('quantity-' + productId);
+                const value = parseInt(input.value);
+                const max = parseInt(input.getAttribute('max') || 99);
+                if (value < max) {
+                    input.value = value + 1;
+                    updateProductSelection(productId);
+                    updateOrderSummary();
+                } else {
+                    alert('Sorry, only ' + max + ' units are available in stock.');
+                }
+            });
+        });
+        
+        // Handle quantity input changes
+        const quantityInputs = document.querySelectorAll('.product-quantity');
+        quantityInputs.forEach(input => {
+            input.addEventListener('change', function() {
+                const productId = this.id.replace('quantity-', '');
+                const max = parseInt(this.getAttribute('max') || 99);
+                const value = parseInt(this.value);
+                
+                // Validate input
+                if (isNaN(value) || value < 1) {
+                    this.value = 1;
+                } else if (value > max) {
+                    this.value = max;
+                    alert('Sorry, only ' + max + ' units are available in stock.');
+                }
+                
+                updateProductSelection(productId);
+                updateOrderSummary();
+            });
+        });
+        
+        // Update checkbox when quantity changes (uncheck if quantity is 0)
+        function updateProductSelection(productId) {
+            const checkbox = document.getElementById('product-' + productId);
+            const input = document.getElementById('quantity-' + productId);
+            const value = parseInt(input.value);
+            
+            if (value < 1) {
+                checkbox.checked = false;
+            } else {
+                checkbox.checked = true;
+            }
+        }
+        
+        // Handle checkbox changes
+        const productCheckboxes = document.querySelectorAll('input[name="productIds"]');
+        productCheckboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                const productId = this.value;
+                const input = document.getElementById('quantity-' + productId);
+                
+                if (!this.checked) {
+                    // Store current value as data attribute
+                    input.setAttribute('data-prev-value', input.value);
+                    input.value = 0;
+                    input.disabled = true;
+                } else {
+                    // Restore previous value or set to 1
+                    const prevValue = input.getAttribute('data-prev-value');
+                    input.value = prevValue ? prevValue : 1;
+                    input.disabled = false;
+                }
+                
+                // Update the order summary
+                updateOrderSummary();
+            });
+        });
+        
+        // Calculate total price and item count
+        function updateOrderSummary() {
+            let totalItems = 0;
+            let totalPrice = 0;
+            
+            // Get all checked products
+            const checkedProducts = document.querySelectorAll('input[name="productIds"]:checked');
+            
+            checkedProducts.forEach(checkbox => {
+                const productId = checkbox.value;
+                const quantityInput = document.getElementById('quantity-' + productId);
+                const quantity = parseInt(quantityInput.value);
+                
+                // Find the price element for this product
+                const productCard = checkbox.closest('.card');
+                const priceElement = productCard.querySelector('.fw-bold');
+                const priceText = priceElement.textContent.trim().replace('$', '');
+                const price = parseFloat(priceText);
+                
+                if (!isNaN(quantity) && !isNaN(price)) {
+                    totalItems += quantity;
+                    totalPrice += price * quantity;
+                }
+            });
+            
+            // Update the summary
+            document.getElementById('total-items').textContent = totalItems;
+            document.getElementById('total-price').textContent = '$' + totalPrice.toFixed(2);
+        }
+        
+        // Initialize order summary on page load
+        updateOrderSummary();
+    });
+</script>
+
+</body>
+</html>

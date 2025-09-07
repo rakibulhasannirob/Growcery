@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{layout :: head}">
+    <title>Enhance Product Description</title>
+</head>
+<body>
+
+<nav th:replace="~{layout :: nav}"></nav>
+
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a th:href="@{/admin/dashboard}" class="text-decoration-none">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a th:href="@{/admin/products}" class="text-decoration-none">Products</a></li>
+                    <li class="breadcrumb-item"><a th:href="@{/admin/product-description}" class="text-decoration-none">Description Generator</a></li>
+                    <li class="breadcrumb-item active" aria-current="page" th:text="${product.name}">Product Name</li>
+                </ol>
+            </nav>
+            
+            <h2 class="text-success">
+                <i class="fas fa-magic me-2"></i>Enhance Product Description
+            </h2>
+            <p class="text-muted">Improve the description and SEO keywords for <span th:text="${product.name}"></span></p>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Current Product Details</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-4 fw-bold">Product Name:</div>
+                        <div class="col-md-8" th:text="${product.name}">Product Name</div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-4 fw-bold">Category:</div>
+                        <div class="col-md-8" th:text="${product.category}">Category</div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-4 fw-bold">Current Description:</div>
+                        <div class="col-md-8" th:text="${product.productDescription ?: 'No description available'}">
+                            Product description...
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-4 fw-bold">Current SEO Keywords:</div>
+                        <div class="col-md-8" th:text="${product.seoKeywords ?: 'No keywords available'}">
+                            Keywords...
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-4 fw-bold">Price:</div>
+                        <div class="col-md-8" th:text="${'$' + product.price}">$0.00</div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-4 fw-bold">Stock:</div>
+                        <div class="col-md-8" th:text="${product.stock}">0</div>
+                    </div>
+                    
+                    <div class="text-center">
+                        <button id="enhanceBtn" class="btn btn-success">
+                            <i class="fas fa-magic me-2"></i>Generate Enhanced Description
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card shadow-sm mb-4" id="resultCard" style="display: none;">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">Enhanced Description</h5>
+                </div>
+                <div class="card-body">
+                    <form th:action="@{'/admin/product-description/update/' + ${product.id}}" method="post">
+                        <div class="mb-3">
+                            <label for="generatedDescription" class="form-label">Product Description</label>
+                            <textarea class="form-control" id="generatedDescription" name="description" rows="8"></textarea>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="generatedKeywords" class="form-label">SEO Keywords</label>
+                            <input type="text" class="form-control" id="generatedKeywords" name="keywords">
+                        </div>
+                        
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <strong>Note:</strong> You can edit the description and keywords before saving.
+                        </div>
+                        
+                        <div class="text-end">
+                            <button type="button" class="btn btn-outline-secondary me-2" id="regenerateBtn">
+                                <i class="fas fa-sync-alt me-2"></i>Regenerate
+                            </button>
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-save me-2"></i>Save Description
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">Product Preview</h5>
+                </div>
+                <div class="card-body text-center">
+          <!--       <img th:src="@{'/images/products/' + ${product.id} + '.jpg'}" 
+                         class="img-fluid rounded mb-3" 
+                         th:alt="${product.name}"
+                         onerror="this.src='/images/product-placeholder.jpg'"
+                         style="max-height: 200px;">
+						 -->   
+                    <h5 th:text="${product.name}">Product Name</h5>
+                    <p class="badge bg-success" th:text="${product.category}">Category</p>
+                    <p class="fw-bold" th:text="${'$' + product.price}">$0.00</p>
+                </div>
+            </div>
+            
+            <div class="card shadow-sm">
+                <div class="card-header bg-secondary text-white">
+                    <h5 class="mb-0">Tips for Great Descriptions</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="fa-ul mb-0">
+                        <li><span class="fa-li"><i class="fas fa-check text-success"></i></span>
+                            Focus on nutritional benefits
+                        </li>
+                        <li><span class="fa-li"><i class="fas fa-check text-success"></i></span>
+                            Include unique qualities and flavor
+                        </li>
+                        <li><span class="fa-li"><i class="fas fa-check text-success"></i></span>
+                            Suggest serving ideas or recipes
+                        </li>
+                        <li><span class="fa-li"><i class="fas fa-check text-success"></i></span>
+                            Mention seasonal information if applicable
+                        </li>
+                        <li><span class="fa-li"><i class="fas fa-check text-success"></i></span>
+                            Use sensory language (taste, texture, aroma)
+                        </li>
+                        <li><span class="fa-li"><i class="fas fa-check text-success"></i></span>
+                            Keep keyword density natural (1-2%)
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer th:replace="~{layout :: footer}"></footer>
+
+<!-- Bootstrap JS and Custom Scripts -->
+<div th:replace="~{layout :: scripts}"></div>
+
+<!-- Custom JavaScript for this page -->
+<script th:inline="javascript">
+document.addEventListener('DOMContentLoaded', function() {
+    const enhanceBtn = document.getElementById('enhanceBtn');
+    const resultCard = document.getElementById('resultCard');
+    const regenerateBtn = document.getElementById('regenerateBtn');
+    
+    // Get product ID using proper Thymeleaf JavaScript inlining
+    const productId = /*[[${product.id}]]*/ 0;
+    
+    // Get context path from Thymeleaf
+    const contextPath = /*[[@{/}]]*/ '';
+    
+    // Generate enhanced description
+    enhanceBtn.addEventListener('click', function() {
+        enhanceBtn.disabled = true;
+        enhanceBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Generating...';
+        
+        fetch(contextPath + 'admin/product-description/generate/' + productId, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('generatedDescription').value = data.description;
+            document.getElementById('generatedKeywords').value = data.keywords;
+            
+            resultCard.style.display = 'block';
+            
+            // Scroll to the result card
+            resultCard.scrollIntoView({ behavior: 'smooth' });
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while generating the enhanced description. Please try again.');
+        })
+        .finally(() => {
+            enhanceBtn.disabled = false;
+            enhanceBtn.innerHTML = '<i class="fas fa-magic me-2"></i>Generate Enhanced Description';
+        });
+    });
+    
+    // Regenerate button
+    if (regenerateBtn) {
+        regenerateBtn.addEventListener('click', function() {
+            enhanceBtn.click();
+        });
+    }
+});
+</script>
+
+</body>
+</html>

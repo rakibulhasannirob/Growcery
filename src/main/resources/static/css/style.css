@@ -1,0 +1,195 @@
+/* Main Styles for Growcery Application */
+
+/* Custom Variables */
+:root {
+    --primary-color: #198754;
+    --primary-dark: #157347;
+    --secondary-color: #ffc107;
+    --light-bg: #f8f9fa;
+    --card-hover: #f1f1f1;
+}
+
+/* General Styles */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.container {
+    flex: 1;
+}
+
+/* Navbar Styles */
+.navbar-brand {
+    font-weight: bold;
+    font-size: 1.5rem;
+}
+
+/* Product Cards */
+.product-card {
+    transition: transform 0.3s, box-shadow 0.3s;
+    height: 100%;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.product-img-container {
+    height: 200px;
+    overflow: hidden;
+    background-color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.product-img {
+    max-height: 100%;
+    max-width: 100%;
+    object-fit: contain;
+}
+
+.product-category {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: var(--primary-color);
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 30px;
+    font-size: 0.8rem;
+}
+
+.product-title {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    height: 48px;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+
+.product-price {
+    font-weight: bold;
+    color: var(--primary-color);
+    font-size: 1.2rem;
+}
+
+.product-stock {
+    font-size: 0.9rem;
+    color: #6c757d;
+}
+
+.out-of-stock {
+    color: #dc3545;
+}
+
+/* Cart Styles */
+.cart-item {
+    border-radius: 10px;
+    margin-bottom: 15px;
+    transition: background-color 0.3s;
+}
+
+.cart-item:hover {
+    background-color: var(--card-hover);
+}
+
+.cart-quantity {
+    width: 70px;
+}
+
+/* Order Styles */
+.order-card {
+    transition: transform 0.3s;
+    cursor: pointer;
+    border-left: 5px solid var(--primary-color);
+}
+
+.order-card:hover {
+    transform: translateX(5px);
+}
+
+/* Form Styles */
+.form-control:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.25rem rgba(25, 135, 84, 0.25);
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-dark);
+    border-color: var(--primary-dark);
+}
+
+.btn-outline-primary {
+    color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.btn-outline-primary:hover {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+/* Admin Dashboard */
+.admin-card {
+    border-radius: 10px;
+    overflow: hidden;
+    transition: transform 0.3s;
+}
+
+.admin-card:hover {
+    transform: translateY(-5px);
+}
+
+.admin-card-icon {
+    font-size: 2.5rem;
+    color: var(--primary-color);
+}
+
+/* Login/Register Forms */
+.auth-container {
+    max-width: 450px;
+    margin: 2rem auto;
+}
+
+.auth-card {
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.auth-header {
+    background-color: var(--primary-color);
+    color: white;
+    border-radius: 10px 10px 0 0;
+    padding: 1.5rem;
+    text-align: center;
+}
+
+/* Footer Styles */
+footer {
+    margin-top: auto;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .product-img-container {
+        height: 150px;
+    }
+    
+    .admin-card-icon {
+        font-size: 2rem;
+    }
+}

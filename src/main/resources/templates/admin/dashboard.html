@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{layout :: head}"></head>
+<body>
+
+<nav th:replace="~{layout :: nav}"></nav>
+
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2 class="text-success">
+                <i class="fas fa-tachometer-alt me-2"></i>Admin Dashboard
+            </h2>
+            <p class="text-muted">Welcome to the Growcery Admin Dashboard. Manage your products, customers, and orders.</p>
+        </div>
+    </div>
+    
+    <!-- Stats Cards -->
+    <div class="row mb-5">
+        <div class="col-md-4 mb-4 mb-md-0">
+            <div class="card admin-card shadow h-100">
+                <div class="card-body text-center py-4">
+                    <div class="admin-card-icon mb-3">
+                        <i class="fas fa-shopping-basket"></i>
+                    </div>
+                    <h3 class="fw-bold" th:text="${productsCount}">0</h3>
+                    <p class="mb-0 text-muted">Total Products</p>
+                    <div class="mt-4">
+                        <a th:href="@{/admin/products}" class="btn btn-outline-success btn-sm">
+                            Manage Products
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-4 mb-md-0">
+            <div class="card admin-card shadow h-100">
+                <div class="card-body text-center py-4">
+                    <div class="admin-card-icon mb-3">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h3 class="fw-bold" th:text="${customersCount}">0</h3>
+                    <p class="mb-0 text-muted">Total Customers</p>
+                    <div class="mt-4">
+                        <a th:href="@{/admin/customers}" class="btn btn-outline-success btn-sm">
+                            View Customers
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card admin-card shadow h-100">
+                <div class="card-body text-center py-4">
+                    <div class="admin-card-icon mb-3">
+                        <i class="fas fa-clipboard-list"></i>
+                    </div>
+                    <h3 class="fw-bold" th:text="${ordersCount}">0</h3>
+                    <p class="mb-0 text-muted">Total Orders</p>
+                    <div class="mt-4">
+                        <a th:href="@{/admin/orders}" class="btn btn-outline-success btn-sm">
+                            View Orders
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Quick Actions -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">Quick Actions</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4 mb-3 mb-md-0">
+                            <div class="d-grid">
+                                <a th:href="@{/admin/products/add}" class="btn btn-primary btn-lg">
+                                    <i class="fas fa-plus-circle me-2"></i>Add New Product
+                                </a>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3 mb-md-0">
+                            <div class="d-grid">
+                                <a th:href="@{/admin/products}" class="btn btn-success btn-lg">
+                                    <i class="fas fa-edit me-2"></i>Manage Products
+                                </a>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="d-grid">
+                                <a th:href="@{/admin/orders}" class="btn btn-secondary btn-lg">
+                                    <i class="fas fa-tasks me-2"></i>Manage Orders
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Admin Navigation -->
+    <div class="row mb-4">
+        <div class="col-md-6 mb-4 mb-md-0">
+            <div class="card shadow h-100">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">Product Management</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">
+                            <a th:href="@{/admin/products}" class="text-decoration-none">
+                                <i class="fas fa-list text-success me-2"></i>View All Products
+                            </a>
+                        </li>
+                        <li class="list-group-item">
+                            <a th:href="@{/admin/products/add}" class="text-decoration-none">
+                                <i class="fas fa-plus-circle text-success me-2"></i>Add New Product
+                            </a>
+                        </li>
+                        <li class="list-group-item">
+                            <a th:href="@{/products?category=FRUIT}" class="text-decoration-none">
+                                <i class="fas fa-apple-alt text-success me-2"></i>View Fruits
+                            </a>
+                        </li>
+                        <li class="list-group-item">
+                            <a th:href="@{/admin/product-description}" class="text-decoration-none">
+                                <i class="fas fa-magic text-success me-2"></i>AI Description Generator
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card shadow h-100">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">Customer & Order Management</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">
+                            <a th:href="@{/admin/customers}" class="text-decoration-none">
+                                <i class="fas fa-users text-success me-2"></i>View All Customers
+                            </a>
+                        </li>
+                        <li class="list-group-item">
+                            <a th:href="@{/admin/orders}" class="text-decoration-none">
+                                <i class="fas fa-clipboard-list text-success me-2"></i>View All Orders
+                            </a>
+                        </li>
+                        <li class="list-group-item">
+                            <a href="#" class="text-decoration-none">
+                                <i class="fas fa-chart-line text-success me-2"></i>Sales Reports
+                            </a>
+                        </li>
+                        <li class="list-group-item">
+                            <a href="#" class="text-decoration-none">
+                                <i class="fas fa-cog text-success me-2"></i>System Settings
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer th:replace="~{layout :: footer}"></footer>
+
+<!-- Bootstrap JS and Custom Scripts -->
+<div th:replace="~{layout :: scripts}"></div>
+
+</body>
+</html>

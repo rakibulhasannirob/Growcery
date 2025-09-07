@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{layout :: head}"></head>
+<body>
+
+<nav th:replace="~{layout :: nav}"></nav>
+
+<div class="container mt-4">
+    <!-- Hero Section -->
+    <div class="row mb-5">
+        <div class="col-md-6 d-flex align-items-center">
+            <div>
+                <h1 class="display-4 fw-bold text-success">Fresh & Healthy</h1>
+                <h2 class="display-6">Straight From The Farm</h2>
+                <p class="lead mt-3">
+                    Welcome to Growcery, your one-stop shop for fresh, organic fruits and vegetables. 
+                    We source directly from local farmers to ensure the highest quality produce for your family.
+                </p>
+                <div class="mt-4">
+                    <a th:href="@{/products}" class="btn btn-success btn-lg me-2">
+                        <i class="fas fa-shopping-basket me-2"></i>Shop Now
+                    </a>
+                    <a th:href="@{/products?category=FRUIT}" class="btn btn-outline-success btn-lg">
+                        <i class="fas fa-apple-alt me-2"></i>Explore Fruits
+                    </a>
+                </div>
+            </div>
+        </div>
+       <!-- <div class="col-md-6">
+            <img th:src="@{/images/hero-image.jpg}" class="img-fluid rounded-3 shadow" alt="Fresh Fruits and Vegetables">
+        </div> -->
+    </div>
+    
+    <!-- Categories Section -->
+    <div class="row mb-5">
+        <div class="col-12 text-center mb-4">
+            <h2 class="fw-bold">Shop By Category</h2>
+            <p class="text-muted">Browse our selection of fresh produce</p>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card h-100 shadow-sm">
+                <div class="row g-0">
+                 <!--   <div class="col-md-4">
+                        <img th:src="@{/images/fruits.jpg}" class="img-fluid rounded-start h-100" alt="Fruits">
+                    </div> -->
+                    <div class="col-md-8">
+                        <div class="card-body">
+                            <h3 class="card-title text-success">Fresh Fruits</h3>
+                            <p class="card-text">
+                                Explore our selection of juicy, ripe fruits sourced from local farms.
+                                From seasonal favorites to exotic varieties, we have everything you need.
+                            </p>
+                            <a th:href="@{/products?category=FRUIT}" class="btn btn-outline-success mt-2">
+                                <i class="fas fa-apple-alt me-2"></i>Browse Fruits
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card h-100 shadow-sm">
+                <div class="row g-0">
+                  <!--  <div class="col-md-4">
+                        <img th:src="@{/images/vegetables.jpg}" class="img-fluid rounded-start h-100" alt="Vegetables">
+                    </div> -->
+                    <div class="col-md-8">
+                        <div class="card-body">
+                            <h3 class="card-title text-success">Fresh Vegetables</h3>
+                            <p class="card-text">
+                                Discover crisp, farm-fresh vegetables for your daily cooking needs.
+                                Handpicked for quality and freshness, our vegetables are delivered straight to you.
+                            </p>
+                            <a th:href="@{/products?category=VEGETABLE}" class="btn btn-outline-success mt-2">
+                                <i class="fas fa-carrot me-2"></i>Browse Vegetables
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+	 <!-- AI Shopping Promo Section -->
+	    <div class="row mb-5" sec:authorize="isAuthenticated() and hasRole('CUSTOMER')">
+	        <div class="col-12">
+	            <div class="card bg-primary bg-gradient text-white shadow">
+	                <div class="card-body p-5">
+	                    <div class="row align-items-center">
+	                        <div class="col-md-8">
+	                            <h2 class="fw-bold mb-3">
+	                                <i class="fas fa-robot me-2"></i>Try Our New AI Shopping Assistant!
+	                            </h2>
+	                            <p class="lead mb-4">
+	                                Tell us your health situation or dietary needs, and our AI will recommend the perfect fruits and vegetables for you!
+	                            </p>
+	                            <ul class="mb-4">
+	                                <li>Personalized recommendations based on your health needs</li>
+	                             
+	                                <li>Get the right nutrition for your specific situation</li>
+	                                <li>Automated ordering process</li>
+	                            </ul>
+	                            <a th:href="@{/ai-shopping}" class="btn btn-light btn-lg">
+	                                <i class="fas fa-magic me-2"></i>Try AI Shopping Now
+	                            </a>
+	                        </div>
+	                        <div class="col-md-4 d-none d-md-block text-center">
+	                            <i class="fas fa-brain fa-10x opacity-50"></i>
+	                        </div>
+	                    </div>
+	                </div>
+	            </div>
+	        </div>
+	    </div>
+	</div>
+    <!-- Featured Products Section -->
+    <div class="row mb-5">
+        <div class="col-12 text-center mb-4">
+            <h2 class="fw-bold">Featured Products</h2>
+            <p class="text-muted">Our best-selling fruits and vegetables</p>
+        </div>
+        
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
+            <div class="col" th:each="product, iterStat : ${products}" th:if="${iterStat.index < 4}">
+                <div class="card h-100 product-card shadow-sm">
+                  <!--  <div class="product-img-container">
+                        <img th:src="@{'/images/products/' + ${product.id} + '.jpg'}" 
+                             class="product-img"
+                             th:alt="${product.name}" 
+                             onerror="this.src='/images/product-placeholder.jpg'">
+                        <span class="product-category badge" 
+                              th:text="${product.category}"></span>
+                    </div> -->
+                    <div class="card-body">
+                        <h5 class="product-title" th:text="${product.name}">Product Name</h5>
+                        <p class="product-description text-muted mb-2" th:text="${product.productDescription}">
+                            Product description goes here.
+                        </p>
+                        <div class="d-flex justify-content-between align-items-center mt-3">
+                            <span class="product-price" th:text="${'$' + product.price}">$0.00</span>
+                            <span class="product-stock" th:text="${product.stock + ' in stock'}" 
+                                  th:class="${product.stock > 0 ? 'product-stock' : 'product-stock out-of-stock'}">
+                                0 in stock
+                            </span>
+                        </div>
+                    </div>
+                    <div class="card-footer bg-white border-top-0">
+                        <form th:action="@{/cart/add}" method="post" th:id="'add-to-cart-form-' + ${product.id}">
+                            <input type="hidden" name="productId" th:value="${product.id}">
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-success" 
+                                        th:disabled="${product.stock <= 0}">
+                                    <i class="fas fa-cart-plus me-2"></i>Add to Cart
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-12 text-center mt-4">
+            <a th:href="@{/products}" class="btn btn-outline-success btn-lg">
+                <i class="fas fa-shopping-basket me-2"></i>View All Products
+            </a>
+        </div>
+    </div>
+    
+    <!-- Testimonials Section -->
+    <div class="row mb-5">
+        <div class="col-12 text-center mb-4">
+            <h2 class="fw-bold">What Our Customers Say</h2>
+            <p class="text-muted">Read reviews from our satisfied customers</p>
+        </div>
+        
+        <div class="row row-cols-1 row-cols-md-3 g-4">
+            <div class="col">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <div class="mb-3 text-warning">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <p class="card-text">
+                            "The fruits I ordered were incredibly fresh and delicious! 
+                            It's like having a farmer's market delivered to my doorstep.
+                            I'm definitely going to be a regular customer."
+                        </p>
+                    </div>
+                    <div class="card-footer bg-white">
+                        <small class="text-muted">- Sarah Johnson</small>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <div class="mb-3 text-warning">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <p class="card-text">
+                            "I've been searching for a reliable source of quality vegetables,
+                            and Growcery exceeds all expectations. The produce is always fresh,
+                            and the customer service is outstanding."
+                        </p>
+                    </div>
+                    <div class="card-footer bg-white">
+                        <small class="text-muted">- Michael Thompson</small>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <div class="mb-3 text-warning">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star-half-alt"></i>
+                        </div>
+                        <p class="card-text">
+                            "The convenience of ordering fresh produce online is unmatched.
+                            Everything arrives in perfect condition, and the variety is impressive.
+                            I appreciate their commitment to supporting local farmers."
+                        </p>
+                    </div>
+                    <div class="card-footer bg-white">
+                        <small class="text-muted">- Emily Rodriguez</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Why Choose Us Section -->
+    <div class="row mb-5">
+        <div class="col-12 text-center mb-4">
+            <h2 class="fw-bold">Why Choose Growcery?</h2>
+            <p class="text-muted">Experience the difference with our premium service</p>
+        </div>
+        
+        <div class="col-md-3 mb-4">
+            <div class="text-center">
+                <div class="bg-success text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                    <i class="fas fa-truck-fast fa-2x"></i>
+                </div>
+                <h4 class="fw-bold">Fast Delivery</h4>
+                <p>Get your orders delivered within 24 hours of placing them.</p>
+            </div>
+        </div>
+        
+        <div class="col-md-3 mb-4">
+            <div class="text-center">
+                <div class="bg-success text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                    <i class="fas fa-check-circle fa-2x"></i>
+                </div>
+                <h4 class="fw-bold">Quality Assured</h4>
+                <p>All our products go through strict quality checks before delivery.</p>
+            </div>
+        </div>
+        
+        <div class="col-md-3 mb-4">
+            <div class="text-center">
+                <div class="bg-success text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                    <i class="fas fa-leaf fa-2x"></i>
+                </div>
+                <h4 class="fw-bold">Organic Products</h4>
+                <p>We source organic produce from certified local farmers.</p>
+            </div>
+        </div>
+        
+        <div class="col-md-3 mb-4">
+            <div class="text-center">
+                <div class="bg-success text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                    <i class="fas fa-piggy-bank fa-2x"></i>
+                </div>
+                <h4 class="fw-bold">Best Prices</h4>
+                <p>Get the best value for your money with our competitive pricing.</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Newsletter Section -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="card bg-light shadow-sm">
+                <div class="card-body p-5 text-center">
+                    <h2 class="fw-bold mb-3">Subscribe to Our Newsletter</h2>
+                    <p class="text-muted mb-4">Stay updated with our latest products and exclusive offers.</p>
+                    <div class="row justify-content-center">
+                        <div class="col-md-6">
+                            <form class="d-flex">
+                                <input type="email" class="form-control me-2" placeholder="Your email address" required>
+                                <button type="submit" class="btn btn-success">Subscribe</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+<footer th:replace="~{layout :: footer}"></footer>
+
+<!-- Bootstrap JS and Custom Scripts -->
+<div th:replace="~{layout :: scripts}"></div>
+
+</body>
+</html>

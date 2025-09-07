@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{layout :: head}"></head>
+<body>
+
+<nav th:replace="~{layout :: nav}"></nav>
+
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2 class="text-success">
+                <i class="fas fa-users me-2"></i>Customer Management
+            </h2>
+            <p class="text-muted">View and manage customer accounts and their order history.</p>
+        </div>
+    </div>
+    
+    <!-- Search -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="input-group">
+                <span class="input-group-text bg-success text-white">
+                    <i class="fas fa-search"></i>
+                </span>
+                <input type="text" id="customerSearch" class="form-control" placeholder="Search customers by username...">
+            </div>
+        </div>
+    </div>
+    
+    <!-- Customers Table -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">Customers List</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Username</th>
+                                    <th>Address</th>
+                                    <th>Mobile</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="customer : ${customers}">
+                                    <td th:text="${customer.id}">1</td>
+                                    <td th:text="${customer.username}">username</td>
+                                    <td th:text="${customer.address ?: 'Not set'}">Address</td>
+                                    <td th:text="${customer.mobileNumber ?: 'Not set'}">Mobile</td>
+                                    <td>
+                                        <a th:href="@{'/admin/customers/' + ${customer.id} + '/orders'}" 
+                                           class="btn btn-sm btn-outline-success">
+                                            <i class="fas fa-clipboard-list me-1"></i>Orders
+                                        </a>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Empty State -->
+    <div class="row mb-4" th:if="${customers.empty}">
+        <div class="col-12 text-center py-5">
+            <i class="fas fa-users fa-3x text-muted mb-3"></i>
+            <h4 class="text-muted">No customers found</h4>
+            <p>There are no customer accounts registered in the system.</p>
+        </div>
+    </div>
+</div>
+
+<footer th:replace="~{layout :: footer}"></footer>
+
+<!-- Bootstrap JS and Custom Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script th:src="@{/js/script.js}"></script>
+
+<!-- Additional JS for Customer Search -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchInput = document.getElementById('customerSearch');
+        if (searchInput) {
+            searchInput.addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase();
+                const rows = document.querySelectorAll('tbody tr');
+                
+                rows.forEach(row => {
+                    const username = row.cells[1].textContent.toLowerCase();
+                    if (username.includes(searchTerm)) {
+                        row.style.display = '';
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
+            });
+        }
+    });
+</script>
+
+</body>
+</html>

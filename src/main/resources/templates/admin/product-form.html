@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{layout :: head}"></head>
+<body>
+
+<nav th:replace="~{layout :: nav}"></nav>
+
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a th:href="@{/admin/dashboard}" class="text-decoration-none">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a th:href="@{/admin/products}" class="text-decoration-none">Products</a></li>
+                    <li class="breadcrumb-item active" aria-current="page" th:text="${productDTO.id == null ? 'Add New Product' : 'Edit Product'}">
+                        Product Form
+                    </li>
+                </ol>
+            </nav>
+            
+            <h2 class="text-success">
+                <i class="fas fa-edit me-2"></i>
+                <span th:text="${productDTO.id == null ? 'Add New Product' : 'Edit Product'}">Product Form</span>
+            </h2>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="card shadow-sm">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0" th:text="${productDTO.id == null ? 'Add New Product' : 'Edit Product'}">Product Form</h5>
+                </div>
+                <div class="card-body p-4">
+                    <form th:action="@{/admin/products/add}" th:object="${productDTO}" method="post">
+                        <input type="hidden" th:field="*{id}">
+                        
+                        <div class="mb-3">
+                            <label for="name" class="form-label">Product Name</label>
+                            <input type="text" class="form-control" id="name" th:field="*{name}" required>
+                            <div class="text-danger" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="productDescription" class="form-label">Product Description</label>
+                            <textarea class="form-control" id="productDescription" th:field="*{productDescription}" rows="3"></textarea>
+                            <div class="text-danger" th:if="${#fields.hasErrors('productDescription')}" th:errors="*{productDescription}"></div>
+                            
+                            <!-- Auto-generate description option -->
+                            <div class="form-check mt-2" th:if="*{id == null}">
+                                <input class="form-check-input" type="checkbox" id="generateDescription" name="generateDescription" value="true">
+                                <label class="form-check-label" for="generateDescription">
+                                    Auto-generate product description and SEO keywords using AI
+                                </label>
+                                <div class="form-text">
+                                    <small>
+                                        Leave the description field empty and check this box to automatically generate a rich description and SEO keywords.
+                                    </small>
+                                </div>
+                            </div>
+                            
+                            <!-- Link to description generator for existing products -->
+                            <div class="form-text" th:if="*{id != null}">
+                                <a th:href="@{'/admin/product-description/' + *{id}}" class="text-decoration-none">
+                                    <i class="fas fa-magic me-1"></i>Use AI to enhance this description
+                                </a>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="seoKeywords" class="form-label">SEO Keywords</label>
+                            <input type="text" class="form-control" id="seoKeywords" th:field="*{seoKeywords}" 
+                                   placeholder="Enter keywords separated by commas">
+                            <div class="form-text">These keywords help improve search rankings and discoverability.</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="category" class="form-label">Category</label>
+                            <select class="form-select" id="category" th:field="*{category}" required>
+                                <option value="">-- Select Category --</option>
+                                <option th:each="category : ${categories}" 
+                                        th:value="${category}" 
+                                        th:text="${category}">
+                                    Category
+                                </option>
+                            </select>
+                            <div class="text-danger" th:if="${#fields.hasErrors('category')}" th:errors="*{category}"></div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="price" class="form-label">Price</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">$</span>
+                                    <input type="number" class="form-control" id="price" th:field="*{price}" min="0" step="0.01" required>
+                                </div>
+                                <div class="text-danger" th:if="${#fields.hasErrors('price')}" th:errors="*{price}"></div>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="stock" class="form-label">Stock</label>
+                                <input type="number" class="form-control" id="stock" th:field="*{stock}" min="0" required>
+                                <div class="text-danger" th:if="${#fields.hasErrors('stock')}" th:errors="*{stock}"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Product Image</label>
+                            <div class="alert alert-info">
+                                <small>
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    Note: Image upload functionality is not implemented in this version. 
+                                    Images are loaded from the /images/products/ folder using the product ID.
+                                </small>
+                            </div>
+                        </div>
+                        
+                        <div class="text-end">
+                            <a th:href="@{/admin/products}" class="btn btn-outline-secondary me-2">Cancel</a>
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-save me-2"></i>Save Product
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer th:replace="~{layout :: footer}"></footer>
+
+<!-- Bootstrap JS and Custom Scripts -->
+<div th:replace="~{layout :: scripts}"></div>
+
+</body>
+</html>
